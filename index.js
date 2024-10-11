@@ -32,37 +32,41 @@ let db = new sqlite3.Database('./base.sqlite3', (err) => {
 });
 
 //Creamos un endpoint de login que recibe los datos como json
-app.post('/insert', jsonParser, function (req, res) {
-    //Imprimimos el contenido del campo todo
-    const { todo } = req.body;
-   
-    console.log(todo);
-    res.setHeader('Content-Type', 'application/json');
-    
-
-    if (!todo) {
-        res.status(400).send('Falta información necesaria');
-        return;
-    }
-    const stmt  =  db.prepare('INSERT INTO todos (todo, created_at) VALUES (?, CURRENT_TIMESTAMP)');
-
-    stmt.run(todo, (err) => {
-        if (err) {
-          console.error("Error running stmt:", err);
-          res.status(500).send(err);
-          return;
-
-        } else {
-          console.log("Insert was successful!");
+app.post('/agregar_todo', jsonParser, async (req, res) => {
+    try {
+        // Extraemos el campo 'todo' del cuerpo de la solicitud
+        const { todo } = req.body;
+        console.log(todo);
+        
+        if (!todo || typeof todo !== 'string' || todo.trim().length === 0) {
+            res.status(400).send('The "todo" field must be a string and cannot be empty');
+            return;
         }
-    });
+        const stmt  =  db.prepare('INSERT INTO todos (todo, created_at) VALUES (?, CURRENT_TIMESTAMP)');
 
-    stmt.finalize();
-    
-    //Enviamos de regreso la respuesta
-    res.setHeader('Content-Type', 'application/json');
-    res.status(201).send();
-})
+        stmt.run(todo, (err) => {
+            if (err) {
+            console.error("Error running stmt:", err);
+            res.status(500).send(err);
+            return;
+
+            } else {
+            console.log("Insert was successful!");
+            }
+        });
+
+        stmt.finalize();
+        
+        //Enviamos de regreso la respuesta
+        res.setHeader('Content-Type', 'application/json');
+        res.status(201).json({ message: 'Todo created successfully'});
+            
+        
+    } catch (error) {
+        console.error('Error general:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
 
 
 

@@ -70,6 +70,7 @@ app.post('/agregar_todo', jsonParser, async (req, res) => {
 
 
 
+
 app.get('/', function (req, res) {
     //Enviamos de regreso la respuesta
     res.setHeader('Content-Type', 'application/json');

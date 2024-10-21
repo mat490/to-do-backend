@@ -31,8 +31,8 @@ let db = new sqlite3.Database('./base.sqlite3', (err) => {
     });
 });
 
-//Creamos un endpoint de login que recibe los datos como json
-app.post('/agregar_todo', jsonParser, async (req, res) => {
+
+app.post('/agregar-todo', jsonParser, async (req, res) => {
     try {
         // Extraemos el campo 'todo' del cuerpo de la solicitud
         const { todo } = req.body;
@@ -77,15 +77,32 @@ app.get('/', function (req, res) {
     res.end(JSON.stringify({ 'status': 'ok' }));
 })
 
+app.get('/todos', (req, res) => {
+    db.all('SELECT * FROM todos ORDER BY created_at DESC', [], (err, rows) => {
+        if (err) {
+            console.error("Error fetching todos:", err);
+            res.status(500).json({ error: 'Error interno del servidor', details: err.message });
+            return;
+        }
+        
+        //console.log("Todos fetched:", rows); // Log para depuración
+        
+        // Enviamos de regreso la respuesta
+        res.setHeader('Content-Type', 'application/json');
+        res.status(200).json({ todos: rows }); // Envolvemos los todos en un objeto
+    });
+});
+
 
 //Creamos un endpoint de login que recibe los datos como json
 app.post('/login', jsonParser, function (req, res) {
     //Imprimimos el contenido del body
     console.log(req.body);
 
-    //Enviamos de regreso la respuesta
+    // Enviamos de regreso la respuesta
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({ 'status': 'ok' }));
+    console.log("Se inicio el login");
 })
 
 //Corremos el servidor en el puerto 3000

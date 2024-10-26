@@ -85,7 +85,7 @@ app.get('/todos', (req, res) => {
             return;
         }
         
-        //console.log("Todos fetched:", rows); // Log para depuración
+        console.log("Todos fetched:", rows); // Log para depuración
         
         // Enviamos de regreso la respuesta
         res.setHeader('Content-Type', 'application/json');

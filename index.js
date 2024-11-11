@@ -85,7 +85,7 @@ app.get('/todos', (req, res) => {
             return;
         }
         
-        console.log("Todos fetched:", rows); // Log para depuración
+        //console.log("Todos fetched:", rows); // Log para depuración
         
         // Enviamos de regreso la respuesta
         res.setHeader('Content-Type', 'application/json');
@@ -115,11 +115,38 @@ app.delete('/done/:id', (req, res) => {
         }
 
         res.status(200).json({ message: `Tarea con id ${id} eliminada exitosamente.` });
+        console.log(`Tarea con id ${id} eliminada exitosamente.`);
     });
 
     stmt.finalize();
 });
 
+app.put('/todos/:id', jsonParser, (req, res) => {
+    const { id } = req.params;  // Obtener el ID desde los parámetros de la URL
+    const { todo } = req.body;  // Obtener el nuevo valor del todo
+
+    if (!todo || typeof todo !== 'string' || todo.trim().length === 0) {
+        return res.status(400).send('El campo "todo" debe ser una cadena no vacía');
+    }
+
+    const stmt = db.prepare('UPDATE todos SET todo = ? WHERE id = ?');
+    stmt.run(todo, id, function (err) {
+        if (err) {
+            console.error("Error al actualizar el todo:", err);
+            return res.status(500).send('Error interno del servidor');
+        }
+
+        if (this.changes === 0) {
+            // Si no se encuentra el todo con el id proporcionado
+            return res.status(404).send('Todo no encontrado');
+        }
+
+        console.log(`Todo con id ${id} actualizado con éxito`);
+        res.status(200).json({ message: 'Todo actualizado con éxito' });
+    });
+
+    stmt.finalize();
+});
 
 //Creamos un endpoint de login que recibe los datos como json
 app.post('/login', jsonParser, function (req, res) {

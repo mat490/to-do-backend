@@ -93,6 +93,33 @@ app.get('/todos', (req, res) => {
     });
 });
 
+app.delete('/done/:id', (req, res) => {
+    const { id } = req.params;
+
+    // Verificamos si el id es válido
+    if (!id || isNaN(id)) {
+        return res.status(400).json({ error: 'El parámetro id debe ser un número válido.' });
+    }
+
+    const stmt = db.prepare('DELETE FROM todos WHERE id = ?');
+
+    stmt.run(id, function(err) {
+        if (err) {
+            console.error("Error al borrar la tarea:", err);
+            res.status(500).json({ error: 'Error interno del servidor', details: err.message });
+            return;
+        }
+
+        if (this.changes === 0) {
+            return res.status(404).json({ message: 'Tarea no encontrada con el id proporcionado.' });
+        }
+
+        res.status(200).json({ message: `Tarea con id ${id} eliminada exitosamente.` });
+    });
+
+    stmt.finalize();
+});
+
 
 //Creamos un endpoint de login que recibe los datos como json
 app.post('/login', jsonParser, function (req, res) {

@@ -13,7 +13,7 @@
     "body-parser": "^1.19.0",
     "express": "^4.21.1",
     "sqlite3": "^5.1.7"
-  }
+  },
 
   "scripts": {
     "build": "next build"

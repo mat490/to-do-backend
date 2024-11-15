@@ -1,7 +1,7 @@
 {
   "name": "actividad-10",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend de To-Do List con Express y SQLite",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -12,5 +12,8 @@
     "body-parser": "^1.19.0",
     "express": "^4.21.1",
     "sqlite3": "^5.1.7"
+  },
+  "engines": {
+    "node": ">=14 <19"
   }
 }
